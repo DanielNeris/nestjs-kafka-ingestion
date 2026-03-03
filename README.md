@@ -42,7 +42,7 @@ All apps and libs use path aliases (`@app/config`, `@app/contracts`, etc.) so im
 
 - **Node 20+**
 - **pnpm**
-- **Docker & Docker Compose** (for Kafka, OpenSearch, and optionally the apps)
+- **Docker & Docker Compose** (for Kafka, OpenSearch, and the apps)
 
 ---
 
@@ -92,21 +92,7 @@ Useful endpoints:
 | Conduktor (Kafka UI)  | http://localhost:8080 (if using full compose)             |
 | Producer HTTP         | http://localhost:3001 — `GET /` starts the stream handler |
 
-### 4. Run apps locally (no Docker for the apps)
-
-With Kafka and OpenSearch already up (e.g. via Docker):
-
-```bash
-# Terminal 1 — producer (publishes to Kafka)
-pnpm exec nest start wikimedia-producer-microservice --watch
-
-# Terminal 2 — consumer (consumes Kafka, indexes to OpenSearch)
-pnpm exec nest start opensearch-consumer-microservice --watch
-```
-
-Use `KAFKA_BROKERS=localhost:9092` and `OPENSEARCH_NODE=http://localhost:9200` in `.env` (or export them) so the apps talk to the containers.
-
-### 5. Dev mode with Docker (mounted code + watch)
+### 4. Dev mode with Docker (mounted code + watch)
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
