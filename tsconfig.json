@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolvePackageJsonExports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@app/config": ["libs/config/src"],
+      "@app/config/*": ["libs/config/src/*"],
+      "@app/opensearch-consumer-microservice": ["apps/opensearch-consumer-microservice/src"],
+      "@app/opensearch-consumer-microservice/*": ["apps/opensearch-consumer-microservice/src/*"],
+      "@app/wikimedia-producer-microservice": ["apps/wikimedia-producer-microservice/src"],
+      "@app/wikimedia-producer-microservice/*": ["apps/wikimedia-producer-microservice/src/*"],
+      "@app/contracts": [
+        "libs/contracts/src"
+      ],
+      "@app/contracts/*": [
+        "libs/contracts/src/*"
+      ],
+      "@app/kafka": [
+        "libs/kafka/src"
+      ],
+      "@app/kafka/*": [
+        "libs/kafka/src/*"
+      ],
+      "@app/opensearch": [
+        "libs/opensearch/src"
+      ],
+      "@app/opensearch/*": [
+        "libs/opensearch/src/*"
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+services:
+  opensearch-consumer-microservice:
+    image: nestjs-kafka-ingestion-opensearch-consumer-microservice-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.opensearch-consumer-microservice.dev
+    volumes:
+      - ./apps/opensearch-consumer-microservice:/app/apps/opensearch-consumer-microservice
+      - ./libs:/app/libs
+    command: pnpm exec nest start opensearch-consumer-microservice --watch
+  wikimedia-producer-microservice:
+    image: nestjs-kafka-ingestion-wikimedia-producer-microservice-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.wikimedia-producer-microservice.dev
+    volumes:
+      - ./apps/wikimedia-producer-microservice:/app/apps/wikimedia-producer-microservice
+      - ./libs:/app/libs
+    command: pnpm exec nest start wikimedia-producer-microservice --watch

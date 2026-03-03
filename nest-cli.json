@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/wikimedia-producer-microservice/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/wikimedia-producer-microservice/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/wikimedia-producer-microservice",
+  "projects": {
+    "config": {
+      "type": "library",
+      "root": "libs/config",
+      "entryFile": "index",
+      "sourceRoot": "libs/config/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/config/tsconfig.lib.json"
+      }
+    },
+    "contracts": {
+      "type": "library",
+      "root": "libs/contracts",
+      "entryFile": "index",
+      "sourceRoot": "libs/contracts/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/contracts/tsconfig.lib.json"
+      }
+    },
+    "kafka": {
+      "type": "library",
+      "root": "libs/kafka",
+      "entryFile": "index",
+      "sourceRoot": "libs/kafka/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/kafka/tsconfig.lib.json"
+      }
+    },
+    "opensearch": {
+      "type": "library",
+      "root": "libs/opensearch",
+      "entryFile": "index",
+      "sourceRoot": "libs/opensearch/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/opensearch/tsconfig.lib.json"
+      }
+    },
+    "opensearch-consumer-microservice": {
+      "type": "application",
+      "root": "apps/opensearch-consumer-microservice",
+      "entryFile": "main",
+      "sourceRoot": "apps/opensearch-consumer-microservice/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/opensearch-consumer-microservice/tsconfig.app.json"
+      }
+    },
+    "wikimedia-producer-microservice": {
+      "type": "application",
+      "root": "apps/wikimedia-producer-microservice",
+      "entryFile": "main",
+      "sourceRoot": "apps/wikimedia-producer-microservice/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wikimedia-producer-microservice/tsconfig.app.json"
+      }
+    }
+  }
+}

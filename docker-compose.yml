@@ -1,0 +1,130 @@
+services:
+  opensearch-consumer-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.opensearch-consumer-microservice
+    container_name: opensearch-consumer-microservice
+    environment:
+      KAFKA_BROKERS: 'kafka:19092'
+      OPENSEARCH_NODE: 'http://opensearch:9200'
+      KAFKAJS_NO_PARTITIONER_WARNING: 1
+    depends_on:
+      kafka:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+  wikimedia-producer-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.wikimedia-producer-microservice
+    container_name: wikimedia-producer-microservice
+    ports:
+      - '3001:3001'
+    environment:
+      PORT: 3001
+      KAFKA_BROKERS: 'kafka:19092'
+      KAFKAJS_NO_PARTITIONER_WARNING: 1
+    depends_on:
+      kafka:
+        condition: service_healthy
+  postgresql:
+    image: postgres:18-alpine
+    hostname: postgresql
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: 'kafka-course'
+      POSTGRES_USER: 'kafka-course'
+      POSTGRES_PASSWORD: 'kafka-course'
+      POSTGRES_HOST_AUTH_METHOD: 'scram-sha-256'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kafka-course -d kafka-course']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  conduktor-console:
+    image: conduktor/conduktor-console
+    ports:
+      - '8080:8080'
+    volumes:
+      - conduktor_data:/var/conduktor
+    environment:
+      CDK_DATABASE_URL: 'postgresql://kafka-course:kafka-course@postgresql:5432/kafka-course'
+      CDK_CLUSTERS_0_ID: 'default'
+      CDK_CLUSTERS_0_NAME: 'My Local Kafka Cluster'
+      CDK_CLUSTERS_0_COLOR: '#0013E7'
+      CDK_CLUSTERS_0_BOOTSTRAPSERVERS: 'PLAINTEXT://kafka:19092'
+    depends_on:
+      postgresql:
+        condition: service_healthy
+  kafka:
+    image: confluentinc/cp-kafka
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - '9092:9092'
+      - '29092:29092'
+      - '9999:9999' # JMX Port
+      - '9099:9099' # Internal inter-broker communication
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'kafka-broker-api-versions --bootstrap-server localhost:19092 || exit 1',
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9099'
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:19092,EXTERNAL://0.0.0.0:9092,DOCKER://0.0.0.0:29092,CONTROLLER://0.0.0.0:9099
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LOG4J_LOGGERS: 'kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTHORIZER_CLASS_NAME: org.apache.kafka.metadata.authorizer.StandardAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 'true'
+  opensearch:
+    image: opensearchproject/opensearch
+    container_name: opensearch
+    environment:
+      discovery.type: single-node
+      plugins.security.disabled: 'true'
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: 'OpenSearch-dev1!'
+    ports:
+      - '9200:9200'
+      - '9600:9600'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl -sS -u "admin:$$OPENSEARCH_INITIAL_ADMIN_PASSWORD" http://localhost:9200/_cluster/health || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards
+    container_name: opensearch-dashboards
+    ports:
+      - '5601:5601'
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: 'true'
+      OPENSEARCH_USERNAME: 'admin'
+      OPENSEARCH_PASSWORD: 'OpenSearch-dev1!'
+    depends_on:
+      opensearch:
+        condition: service_healthy
+volumes:
+  pg_data: {}
+  conduktor_data: {}
