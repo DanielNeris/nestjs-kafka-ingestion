@@ -12,6 +12,8 @@ export const envSchema = z.object({
   KAFKAJS_NO_PARTITIONER_WARNING: z.string().optional().default('1'),
   /** OpenSearch node URL. Use http://opensearch:9200 in Docker. */
   OPENSEARCH_NODE: z.string().default('http://localhost:9200'),
+  /** Confluent Schema Registry URL. Use http://schema-registry:8081 in Docker. */
+  SCHEMA_REGISTRY_URL: z.string().default('http://localhost:8081'),
   /** HTTP server port (api-gateway default 3000; set e.g. PORT=3001 for wikimedia-producer). */
   PORT: z
     .string()

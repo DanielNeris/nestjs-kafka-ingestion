@@ -4,9 +4,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { KAFKA_CLIENT, HIGH_THROUGHPUT_SEND_OPTIONS } from './kafka.constants';
 import { getKafkaBrokers } from './kafka.config';
 import { KafkaProducer } from './kafka.producer';
+import { SchemaRegistryService } from './schema-registry.service';
 
 /**
- * Global Kafka module providing a shared producer (ClientKafka).
+ * Global Kafka module providing a shared producer (ClientKafka) and Schema Registry client.
  * High-throughput: Snappy compression, acks=1, 30s timeout.
  * Usage: import KafkaModule once (e.g. in api-gateway AppModule).
  */
@@ -28,7 +29,7 @@ import { KafkaProducer } from './kafka.producer';
       },
     ]),
   ],
-  providers: [KafkaProducer],
-  exports: [KafkaProducer],
+  providers: [KafkaProducer, SchemaRegistryService],
+  exports: [KafkaProducer, SchemaRegistryService],
 })
 export class KafkaModule {}

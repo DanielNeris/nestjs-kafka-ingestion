@@ -18,7 +18,7 @@
     "test:coverage": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:functional": "jest --config ./test/functional/jest-functional.json",
-    "test:e2e": "jest --config ./test/e2e/jest-e2e.json",
+    "test:e2e": "jest --config ./apps/nestjs-kafka-ingestion/test/e2e/jest-e2e.json",
     "test:all": "pnpm run test:coverage && pnpm run test:functional && pnpm run test:e2e",
     "docker:up": "docker compose up -d",
     "docker:up:build": "docker compose up -d --build",
@@ -26,6 +26,7 @@
     "docker:down": "docker compose down"
   },
   "dependencies": {
+    "@kafkajs/confluent-schema-registry": "^3.9.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",
@@ -94,7 +95,8 @@
     ],
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/test"
+      "<rootDir>/test",
+      "<rootDir>/apps/"
     ],
     "moduleNameMapper": {
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",

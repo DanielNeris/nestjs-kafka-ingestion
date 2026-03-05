@@ -22,12 +22,12 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/config": ["libs/config/src"],
-      "@app/config/*": ["libs/config/src/*"],
-      "@app/opensearch-consumer-microservice": ["apps/opensearch-consumer-microservice/src"],
-      "@app/opensearch-consumer-microservice/*": ["apps/opensearch-consumer-microservice/src/*"],
-      "@app/wikimedia-producer-microservice": ["apps/wikimedia-producer-microservice/src"],
-      "@app/wikimedia-producer-microservice/*": ["apps/wikimedia-producer-microservice/src/*"],
+      "@app/config": [
+        "libs/config/src"
+      ],
+      "@app/config/*": [
+        "libs/config/src/*"
+      ],
       "@app/contracts": [
         "libs/contracts/src"
       ],
@@ -43,8 +43,20 @@
       "@app/opensearch": [
         "libs/opensearch/src"
       ],
+      "@app/opensearch-consumer-microservice": [
+        "apps/opensearch-consumer-microservice/src"
+      ],
+      "@app/opensearch-consumer-microservice/*": [
+        "apps/opensearch-consumer-microservice/src/*"
+      ],
       "@app/opensearch/*": [
         "libs/opensearch/src/*"
+      ],
+      "@app/wikimedia-producer-microservice": [
+        "apps/wikimedia-producer-microservice/src"
+      ],
+      "@app/wikimedia-producer-microservice/*": [
+        "apps/wikimedia-producer-microservice/src/*"
       ]
     }
   }

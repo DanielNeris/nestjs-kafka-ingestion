@@ -1,4 +1,19 @@
 services:
+  kafka-topics-init:
+    image: confluentinc/cp-kafka
+    container_name: kafka-topics-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        echo "Creating Kafka topics (3 partitions each)..."
+        for topic in wikimedia.recentchange dead-letter.queue wikimedia.count.bot wikimedia.count.website wikimedia.timeseries.events; do
+          kafka-topics --create --if-not-exists --bootstrap-server kafka:19092 --partitions 3 --replication-factor 1 --topic "$$topic"
+        done
+        echo "Topics ready."
+    restart: 'no'
   opensearch-consumer-microservice:
     build:
       context: .
@@ -6,11 +21,14 @@ services:
     container_name: opensearch-consumer-microservice
     environment:
       KAFKA_BROKERS: 'kafka:19092'
+      SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
       OPENSEARCH_NODE: 'http://opensearch:9200'
       KAFKAJS_NO_PARTITIONER_WARNING: 1
     depends_on:
       kafka:
         condition: service_healthy
+      kafka-topics-init:
+        condition: service_completed_successfully
       opensearch:
         condition: service_healthy
   wikimedia-producer-microservice:
@@ -23,10 +41,27 @@ services:
     environment:
       PORT: 3001
       KAFKA_BROKERS: 'kafka:19092'
+      SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
       KAFKAJS_NO_PARTITIONER_WARNING: 1
     depends_on:
       kafka:
         condition: service_healthy
+      kafka-topics-init:
+        condition: service_completed_successfully
+  wikimedia-streams-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.wikimedia-streams-microservice
+    container_name: wikimedia-streams-microservice
+    environment:
+      KAFKA_BROKERS: 'kafka:19092'
+      SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      KAFKAJS_NO_PARTITIONER_WARNING: 1
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-topics-init:
+        condition: service_completed_successfully
   postgresql:
     image: postgres:18-alpine
     hostname: postgresql
@@ -92,6 +127,19 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTHORIZER_CLASS_NAME: org.apache.kafka.metadata.authorizer.StandardAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 'true'
+  schema-registry:
+    image: confluentinc/cp-schema-registry
+    hostname: schema-registry
+    container_name: schema-registry
+    ports:
+      - '8081:8081'
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka:19092'
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8081'
+    depends_on:
+      kafka:
+        condition: service_healthy
   opensearch:
     image: opensearchproject/opensearch
     container_name: opensearch

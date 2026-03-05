@@ -17,3 +17,12 @@ services:
       - ./apps/wikimedia-producer-microservice:/app/apps/wikimedia-producer-microservice
       - ./libs:/app/libs
     command: pnpm exec nest start wikimedia-producer-microservice --watch
+  wikimedia-streams-microservice:
+    image: nestjs-kafka-ingestion-wikimedia-streams-microservice-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.wikimedia-streams-microservice.dev
+    volumes:
+      - ./apps/wikimedia-streams-microservice:/app/apps/wikimedia-streams-microservice
+      - ./libs:/app/libs
+    command: pnpm exec nest start wikimedia-streams-microservice --watch

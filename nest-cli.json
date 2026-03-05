@@ -63,6 +63,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/wikimedia-producer-microservice/tsconfig.app.json"
       }
+    },
+    "wikimedia-streams-microservice": {
+      "type": "application",
+      "root": "apps/wikimedia-streams-microservice",
+      "entryFile": "main",
+      "sourceRoot": "apps/wikimedia-streams-microservice/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wikimedia-streams-microservice/tsconfig.app.json"
+      }
     }
   }
 }

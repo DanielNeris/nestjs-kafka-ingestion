@@ -4,3 +4,5 @@ export * from './kafka.consumer';
 export * from './kafka.config';
 export * from './kafka.constants';
 export * from './kafka.types';
+export * from './schema-registry.config';
+export * from './schema-registry.service';
